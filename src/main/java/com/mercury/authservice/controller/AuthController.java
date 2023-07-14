@@ -65,7 +65,8 @@ public class AuthController {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(
                             authRequest.getUsername(),authRequest.getPassword()));
-            if(authentication.isAuthenticated()&&authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("Admin"))){
+            if(authentication.isAuthenticated()&&
+                    authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("Admin")||a.getAuthority().equals("Manager"))){
                 String token = authService.generateToken(authRequest.getUsername());
                 User user = (User)userDetailsService.loadUserByUsername(authRequest.getUsername());
                 return new LoginResponse("Login successfully", user, token);
