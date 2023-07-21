@@ -33,7 +33,7 @@ public class AuthController {
         return authService.saveUser(user);
     }
 
-    @PutMapping("/adminRegister")
+    @PutMapping("/admin/register")
     public DataResponse updateAdmin(@RequestBody User user) {
         return authService.updateAdmin(user);
     }
@@ -47,7 +47,11 @@ public class AuthController {
             if(authentication.isAuthenticated()&&authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("Customer"))){
                 String token = authService.generateToken(authRequest.getUsername());
                 User user = (User)userDetailsService.loadUserByUsername(authRequest.getUsername());
-                return new LoginResponse("Login successfully", user, token);
+                if (user.getStatus()=="Active"){
+                    return new LoginResponse("Login successfully", user, token);
+                }else {
+                    return new LoginResponse(false,"Your account is not active");
+                }
             }else {
                 return new LoginResponse(false,"Invalid access");
             }
@@ -69,7 +73,11 @@ public class AuthController {
                     authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("Admin")||a.getAuthority().equals("Manager"))){
                 String token = authService.generateToken(authRequest.getUsername());
                 User user = (User)userDetailsService.loadUserByUsername(authRequest.getUsername());
-                return new LoginResponse("Login successfully", user, token);
+                if (user.getStatus()=="Active"){
+                    return new LoginResponse("Login successfully", user, token);
+                }else {
+                    return new LoginResponse(false,"Your account is not active");
+                }
             }else {
                 return new LoginResponse(false,"Invalid access");
             }
